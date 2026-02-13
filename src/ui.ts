@@ -2,6 +2,33 @@ import chalk from 'chalk';
 import boxen from 'boxen';
 import { CommitInfo, CommitGroup } from './git';
 
+const MAX_WIDTH = 75;
+
+/**
+ * Wrap text to fit within a maximum width, preserving existing newlines.
+ */
+function wrapText(text: string, width: number): string {
+  return text
+    .split('\n')
+    .map((line) => {
+      if (line.length <= width) return line;
+      const words = line.split(' ');
+      const lines: string[] = [];
+      let current = '';
+      for (const word of words) {
+        if (current.length + word.length + 1 > width && current.length > 0) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = current ? current + ' ' + word : word;
+        }
+      }
+      if (current) lines.push(current);
+      return lines.join('\n');
+    })
+    .join('\n');
+}
+
 const ICONS = {
   commit: '\u25CF',    // ●
   branch: '\u251C',    // ├
@@ -11,6 +38,11 @@ const ICONS = {
   bullet: '\u25B8',    // ▸
   check: '\u2713',     // ✓
   arrow: '\u25B6',     // ▶
+  calendar: '\uD83D\uDCC5',  // 📅
+  rocket: '\uD83D\uDE80',    // 🚀
+  brain: '\uD83E\uDDE0',     // 🧠
+  memo: '\uD83D\uDCDD',      // 📝
+  sparkle: '\u2728',          // ✨
 };
 
 export function printBanner(): void {
@@ -97,7 +129,7 @@ export function printGroupedCommits(groups: CommitGroup[]): void {
 export function printSummary(title: string, content: string): void {
   if (!content) return;
 
-  const box = boxen(content, {
+  const box = boxen(wrapText(content, MAX_WIDTH - 6), {
     title: chalk.bold.cyan(title),
     titleAlignment: 'left',
     padding: 1,
@@ -185,7 +217,8 @@ export function printCopilotStatus(available: boolean): void {
     console.log(
       chalk.dim('   ') +
         chalk.green(`${ICONS.check} GitHub Copilot CLI detected`) +
-        chalk.dim(' — AI summaries enabled')
+        chalk.dim(' \u2014 AI summaries enabled ') +
+        chalk.green(ICONS.brain)
     );
   } else {
     console.log(

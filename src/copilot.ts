@@ -1,5 +1,6 @@
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import chalk from 'chalk';
 import { CommitInfo } from './git';
 
 const execFileAsync = promisify(execFile);
@@ -64,6 +65,28 @@ function cleanCopilotOutput(output: string): string {
 }
 
 /**
+ * Convert markdown formatting to terminal-friendly text with chalk colors.
+ */
+function renderMarkdown(text: string): string {
+  return text
+    .split('\n')
+    .map((line) => {
+      // Headers: ## Title -> bold white
+      if (/^#{1,3}\s/.test(line)) {
+        return chalk.bold.white(line.replace(/^#{1,3}\s+/, ''));
+      }
+      // Bold: **text** -> chalk bold
+      line = line.replace(/\*\*([^*]+)\*\*/g, (_, content) => chalk.bold(content));
+      // Inline code: `text` -> chalk cyan
+      line = line.replace(/`([^`]+)`/g, (_, content) => chalk.cyan(content));
+      // Italic: *text* -> chalk dim
+      line = line.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, (_, content) => chalk.dim(content));
+      return line;
+    })
+    .join('\n');
+}
+
+/**
  * Format commits into a prompt-friendly string.
  */
 function formatCommitsForPrompt(commits: CommitInfo[]): string {
@@ -94,7 +117,8 @@ export async function generateDailySummary(
   const commitList = formatCommitsForPrompt(commits);
   const prompt = `Summarize these git commits from today in the "${repoName}" project by ${authorName} as a short developer journal entry. Group related work together. Use bullet points. Be concise but informative:\n\n${commitList}`;
 
-  return askCopilot(prompt);
+  const response = await askCopilot(prompt);
+  return response ? renderMarkdown(response) : '';
 }
 
 /**
@@ -111,7 +135,8 @@ export async function generateStandupReport(
 
   const prompt = `Generate a standup report for developer ${authorName} on project "${repoName}". Format it as: YESTERDAY (what was done), TODAY (what's planned based on recent work direction), BLOCKERS (potential issues spotted). Yesterday's commits:\n${yesterdayList || 'No commits yesterday'}\n\nToday's commits so far:\n${todayList || 'No commits yet today'}`;
 
-  return askCopilot(prompt);
+  const response = await askCopilot(prompt);
+  return response ? renderMarkdown(response) : '';
 }
 
 /**
@@ -127,7 +152,8 @@ export async function generateWeeklySummary(
   const commitList = formatCommitsForPrompt(commits);
   const prompt = `Summarize this week's git activity in "${repoName}" by ${authorName} as a weekly developer recap. Highlight key accomplishments, areas of focus, and overall progress. Use sections and bullet points:\n\n${commitList}`;
 
-  return askCopilot(prompt);
+  const response = await askCopilot(prompt);
+  return response ? renderMarkdown(response) : '';
 }
 
 /**
@@ -143,7 +169,8 @@ export async function generateReleaseNotes(
   const commitList = formatCommitsForPrompt(commits);
   const prompt = `Generate release notes for "${repoName}" covering changes since ${fromTag}. Categorize into: Features, Bug Fixes, Improvements, and Breaking Changes. Use markdown formatting. Only include categories that have entries:\n\n${commitList}`;
 
-  return askCopilot(prompt);
+  const response = await askCopilot(prompt);
+  return response ? renderMarkdown(response) : '';
 }
 
 /**
@@ -160,7 +187,8 @@ export async function generateRangeSummary(
   const commitList = formatCommitsForPrompt(commits);
   const prompt = `Summarize the git activity in "${repoName}" from ${from} to ${to}. Provide a narrative overview of what was accomplished, key changes, and their impact:\n\n${commitList}`;
 
-  return askCopilot(prompt);
+  const response = await askCopilot(prompt);
+  return response ? renderMarkdown(response) : '';
 }
 
 /**

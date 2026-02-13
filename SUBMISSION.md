@@ -38,11 +38,11 @@ Every command exports to Markdown (`-o file.md`) or JSON (`--json`) for automati
 
 **`devlog today` — AI-generated journal from your git history:**
 
-{% asciinema ui6n3bTOKWzM3pcX %}
+{% asciinema qckuaeQ4Ifdswund %}
 
 **`devlog standup` — Copilot CLI reads your source code and finds real blockers:**
 
-{% asciinema fcajXxBEvmHfHjdY %}
+{% asciinema f68w95p4etmzxSKx %}
 
 ### `devlog today` — What did I actually do?
 
