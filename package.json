@@ -1,0 +1,42 @@
+{
+  "name": "devlog-cli",
+  "version": "1.0.0",
+  "description": "AI-powered developer journal that transforms your git history into meaningful narratives using GitHub Copilot CLI",
+  "main": "dist/index.js",
+  "bin": {
+    "devlog": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": [
+    "devlog",
+    "git",
+    "copilot",
+    "cli",
+    "developer-journal",
+    "standup",
+    "release-notes",
+    "changelog"
+  ],
+  "author": "Natnael Getenew Zeleke",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "boxen": "^5.1.2",
+    "commander": "^12.1.0",
+    "ora": "^5.4.1",
+    "simple-git": "^3.27.0",
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "ts-node": "^10.9.2"
+  }
+}
