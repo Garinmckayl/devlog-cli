@@ -34,6 +34,16 @@ Every command exports to Markdown (`-o file.md`) or JSON (`--json`) for automati
 
 **GitHub Repository:** [https://github.com/Garinmckayl/devlog-cli](https://github.com/Garinmckayl/devlog-cli)
 
+### Video Walkthrough
+
+**`devlog today` — AI-generated journal from your git history:**
+
+{% asciinema ui6n3bTOKWzM3pcX %}
+
+**`devlog standup` — Copilot CLI reads your source code and finds real blockers:**
+
+{% asciinema fcajXxBEvmHfHjdY %}
+
 ### `devlog today` — What did I actually do?
 
 Running `devlog today` in any git repo gives you this:

@@ -4,6 +4,16 @@
 
 devlog reads your git commits and uses [GitHub Copilot CLI](https://github.com/github/copilot-cli) to generate human-readable developer journals, standup reports, weekly recaps, and release notes — all from your terminal.
 
+## Demo
+
+### AI-powered daily journal from your git history
+
+[![devlog today demo](https://asciinema.org/a/ui6n3bTOKWzM3pcX.svg)](https://asciinema.org/a/ui6n3bTOKWzM3pcX)
+
+### Standup report — Copilot CLI reads your source code and finds real blockers
+
+[![devlog standup demo](https://asciinema.org/a/fcajXxBEvmHfHjdY.svg)](https://asciinema.org/a/fcajXxBEvmHfHjdY)
+
 ## Why devlog?
 
 Developers write commit messages, but rarely take time to reflect on what they actually accomplished. devlog bridges that gap by turning raw git history into:
