@@ -1,0 +1,227 @@
+---
+title: "devlog: I Built an AI-Powered Developer Journal That Turns Git Commits Into Stories"
+published: true
+tags: devchallenge, githubchallenge, cli, githubcopilot
+---
+
+*This is a submission for the [GitHub Copilot CLI Challenge](https://dev.to/challenges/github-2026-01-21)*
+
+## What I Built
+
+Every developer knows this moment: it's standup time, someone asks "what did you do yesterday?" and your mind goes completely blank. You stare at your terminal, maybe run `git log`, and try to reconstruct your day from cryptic commit messages like `fix: resolve edge case` and `wip: stuff`.
+
+I run bootstrapped startups from Addis Ababa. No team lead reviewing my PRs, no standup bot. Just me and my git history. I needed a way to look back at a day, a week, a release — and actually understand what happened. Not commit hashes. Stories.
+
+**devlog** is a CLI tool that reads your git history and uses GitHub Copilot CLI to transform raw commits into human-readable narratives — daily journals, standup reports, weekly recaps, and release notes.
+
+But here's the part that genuinely surprised me: **Copilot CLI doesn't just summarize commit messages. It reads your actual source code.** When I ran `devlog standup` on a test project, it opened my `auth.ts` file, saw that the function returned hardcoded `true`, and flagged it as a blocker. I asked it for a standup and it gave me a code review. I didn't expect that.
+
+### Commands
+
+| Command | What it does |
+|---------|-------------|
+| `devlog today` | AI-generated journal of today's work |
+| `devlog standup` | Yesterday / Today / Blockers format |
+| `devlog week` | Weekly recap grouped by day |
+| `devlog release` | Categorized release notes since last tag |
+| `devlog recap a1b2..c3d4` | Summarize any custom commit range |
+
+Every command exports to Markdown (`-o file.md`) or JSON (`--json`) for automation.
+
+**The meta moment:** I used devlog to generate its own development journal. It works.
+
+## Demo
+
+**GitHub Repository:** [https://github.com/Garinmckayl/devlog-cli](https://github.com/Garinmckayl/devlog-cli)
+
+### `devlog today` — What did I actually do?
+
+Running `devlog today` in any git repo gives you this:
+
+```
+╭───────────────────────────────────────────╮
+│                                           │
+│   devlog — AI-powered developer journal   │
+│   Powered by GitHub Copilot CLI ✨        │
+│                                           │
+╰───────────────────────────────────────────╯
+
+   ✓ GitHub Copilot CLI detected — AI summaries enabled
+
+══ Today's Work — test-repo
+   Branch: master • Author: Natnael Getenew Zeleke
+
+   5 commits • 1 author • 5 files changed
+
+   ├ eb72c59 docs: add initial API documentation
+   │  Natnael Getenew Zeleke • 26m ago
+   │  docs/README.md
+   │
+   ├ 0283eab refactor: extract middleware into separate module
+   │  Natnael Getenew Zeleke • 26m ago
+   │  src/middleware.ts
+   │
+   ├ 99fc75d fix: improve error handling for edge cases
+   │  Natnael Getenew Zeleke • 26m ago
+   │  src/errors.ts
+   │
+   ├ d4b5e31 feat: add authentication module and input validation
+   │  Natnael Getenew Zeleke • 26m ago
+   │  src/auth.ts, src/validate.ts
+   │
+   └ e2f0784 feat: initialize project with TypeScript setup
+      Natnael Getenew Zeleke • 26m ago
+
+   ╭ AI Summary ───────────────────────────────────────────────────────────────╮
+   │                                                                           │
+   │   ## Developer Journal - February 13, 2026                                │
+   │                                                                           │
+   │   **Project Setup & Core Features**                                       │
+   │   - Initialized TypeScript project structure                              │
+   │   - Implemented authentication module with input validation support       │
+   │   (auth.ts, validate.ts)                                                  │
+   │                                                                           │
+   │   **Code Quality Improvements**                                           │
+   │   - Refactored middleware logic into separate module for better           │
+   │   organization                                                            │
+   │   - Enhanced error handling to cover additional edge cases                │
+   │                                                                           │
+   │   **Documentation**                                                       │
+   │   - Created initial API documentation structure                           │
+   │                                                                           │
+   │   ---                                                                     │
+   │   *5 commits total • 5 files changed, 5 insertions(+)*                    │
+   │                                                                           │
+   ╰───────────────────────────────────────────────────────────────────────────╯
+
+   Generated by devlog • Powered by GitHub Copilot CLI
+```
+
+### `devlog standup` — The one that blew my mind
+
+This is where Copilot CLI went beyond what I thought it could do. I ran `devlog standup` and it didn't just list my commits — **it opened my source files and identified real issues:**
+
+```
+══ Standup Report — test-repo
+   Branch: master • Friday, February 13, 2026
+
+   ╭ AI Standup Report ────────────────────────────────────────────────────────╮
+   │                                                                           │
+   │   **STANDUP REPORT - Natnael Getenew Zeleke**                             │
+   │   **Project:** test-repo                                                  │
+   │   **Date:** February 13, 2026                                             │
+   │                                                                           │
+   │   **YESTERDAY:**                                                          │
+   │   - No commits or work completed                                          │
+   │                                                                           │
+   │   **TODAY:**                                                              │
+   │   - ✅ Initialized TypeScript project structure                           │
+   │   - ✅ Built authentication module with token-based auth                  │
+   │   (`src/auth.ts`)                                                         │
+   │   - ✅ Implemented input validation utilities (`src/validate.ts`)         │
+   │   - ✅ Added centralized error handling (`src/errors.ts`)                 │
+   │   - ✅ Extracted middleware layer for better separation of concerns       │
+   │   (`src/middleware.ts`)                                                   │
+   │   - ✅ Started API documentation with authentication endpoint             │
+   │   (`docs/README.md`)                                                      │
+   │                                                                           │
+   │   **PLANNED/NEXT:**                                                       │
+   │   - Complete API documentation for remaining endpoints                    │
+   │   - Add comprehensive tests for auth, validation, and error handling      │
+   │   - Implement actual authentication logic (currently returns stub         │
+   │   `true`)                                                                 │
+   │   - Enhance validation with more robust rules beyond length checks        │
+   │                                                                           │
+   │   **BLOCKERS:**                                                           │
+   │   - ⚠️ Auth module is currently a stub - needs actual token               │
+   │   verification logic                                                      │
+   │   - ⚠️ No tests exist yet for any modules                                 │
+   │   - ⚠️ Missing TypeScript configuration files (tsconfig.json)             │
+   │   - ⚠️ Validation is minimal - production needs schema validation         │
+   │   (e.g., Zod, Joi)                                                        │
+   │   - ⚠️ Error handling lacks structured error responses and logging        │
+   │   strategy                                                                │
+   │                                                                           │
+   ╰───────────────────────────────────────────────────────────────────────────╯
+```
+
+Those blockers are **real**. Copilot CLI actually read `src/auth.ts`, saw the stub `return true`, noticed there are no tests, and flagged that validation is too minimal for production. I asked for a standup report and got a code review. This isn't summarization — it's Copilot CLI's agentic capabilities turning commit metadata into actionable insight.
+
+### Export to Markdown & JSON
+
+```bash
+# Save today's journal for your team wiki
+devlog today -o journal.md
+
+# Pipe JSON into other tools or Slack bots
+devlog today --json | jq '.summary'
+
+# Weekly recap as a markdown file
+devlog week -o weekly-recap.md
+```
+
+### Try it yourself
+
+```bash
+git clone https://github.com/Garinmckayl/devlog-cli.git
+cd devlog-cli
+npm install && npm run build
+cd /any/git/repo
+node /path/to/devlog-cli/dist/index.js today
+```
+
+## My Experience with GitHub Copilot CLI
+
+### Copilot CLI as the Product's Brain
+
+devlog uses `gh copilot -- -p` (the prompt interface) as its AI backend. Here's what it does under the hood:
+
+**Input:** Raw commit data formatted as a prompt:
+```
+Summarize these git commits from today in "my-project" by Natnael 
+as a short developer journal entry:
+
+- [a3f21bc] feat: add user authentication flow (files: src/auth.ts, src/middleware.ts)
+- [9c0e412] fix: resolve token expiration edge case (files: src/auth.ts)
+- [7fd7744] refactor: clean up error handling (files: src/utils/errors.ts)
+```
+
+**Output from Copilot CLI:** A structured, narrative summary that groups related work, identifies patterns, and even reads source files when available.
+
+The standup command is where it gets wild. I pass yesterday's and today's commits, and Copilot CLI:
+1. Summarizes what was done
+2. Infers what's planned based on the direction of work
+3. **Identifies potential blockers by actually reading the code** — it caught stubbed functions, missing tests, and oversimplified validation
+
+### The Agentic Surprise
+
+I built devlog expecting Copilot CLI to be a text summarizer. Feed it commit messages, get a paragraph back. What I didn't anticipate was the agentic behavior — Copilot CLI actually inspects your working directory. In the standup output above, you can see it ran `ls`, read `src/auth.ts`, read `package.json`, and used that context to generate blockers I hadn't even thought of.
+
+This changes what a "commit summarizer" can be. It's not reformatting `git log`. It's understanding your project.
+
+### Copilot CLI as My Dev Companion
+
+I also used Copilot CLI throughout the build process:
+
+- **`gh copilot -- -p "What's the best way to parse git log dates in ISO 8601 format with simple-git?"`** — Saved me from a timezone bug. Copilot CLI explained that `simple-git` returns dates in ISO format but the `--after` flag needs a specific format string.
+
+- **`gh copilot -- -p "How do I detect the latest git tag and get commits since that tag?"`** — Led me to `git describe --tags --abbrev=0` which I wouldn't have found easily in docs.
+
+- **Architecture discussions** — I described what I wanted to build and Copilot CLI helped me structure the modules: separating git parsing, AI integration, UI rendering, and export into clean boundaries.
+
+### The Fallback Design
+
+Without Copilot CLI, devlog still works — it falls back to keyword-based categorization (feat/fix/refactor). But with Copilot CLI, it becomes genuinely intelligent. The standup blockers, the code-aware summaries, the narrative structure — all of that requires Copilot CLI.
+
+### Tech Stack
+
+- TypeScript + Node.js
+- `simple-git` — git log parsing
+- `commander` — CLI interface
+- `chalk` + `boxen` + `ora` — terminal UI
+- `date-fns` — date manipulation
+- GitHub Copilot CLI (`gh copilot -- -p`) — AI-powered summarization, categorization, and code-aware standup generation
+
+---
+
+*devlog is open source under the MIT license. Built from Addis Ababa by [Natnael Getenew Zeleke](https://github.com/Garinmckayl).*
